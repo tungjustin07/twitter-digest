@@ -1,0 +1,36 @@
+name: Weekly GTM & RevOps Digest
+
+on:
+  schedule:
+    - cron: '0 1 * * 1'  # Monday 1am UTC = Sunday 6pm PT
+  workflow_dispatch:      # run manually from the Actions tab
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'   # last30days engine requires Python 3.12+
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install last30days engine
+        run: git clone --depth 1 https://github.com/mvanhorn/last30days-skill.git "${{ github.workspace }}/last30days-skill"
+
+      - name: Run digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY:    ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM:        ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO:          ${{ secrets.EMAIL_TO }}
+          LAST30DAYS_SCRIPT: ${{ github.workspace }}/last30days-skill/skills/last30days/scripts/last30days.py
+        run: python digest.py
