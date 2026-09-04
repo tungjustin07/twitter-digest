@@ -92,3 +92,4 @@ Because this repo is **public**, configure these encrypted secrets only (Setting
 - `.env` is gitignored — do not commit API keys
 - Public forks will not receive your Actions secrets
 - Logs under `logs/` are local-only and gitignored
+# CI verification: this line confirms the smoke-test + auto-merge pipeline works end-to-end.
